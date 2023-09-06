@@ -47,10 +47,24 @@ def compile_c_program(target,path):
 
 ##compile_c_program("tweets")
 
-def run_c_program(program_name, seed,path,num_of_words):
-    parameters = [seed, num_of_words, path]
-    run_command = [f"./{program_name}"] + [str(param) for param in parameters]
-    subprocess.run(run_command, check=True)
+
+import subprocess
+
+def run_c_program(program_path, seed, database_path, num_of_words,current_directory):
+    # Convert parameters to strings
+    seed_str = str(seed)
+    num_of_words_str = str(num_of_words)
+    # Create the command as a list of strings
+    command = [program_path, seed_str, num_of_words_str, database_path]
+    try:
+        result = subprocess.run(command, check=True, stderr=subprocess.PIPE, text=True,cwd = current_directory)
+        # Print stderr (error messages) if there are any
+        if result.stderr:
+            print(f"Error messages from {program_path}:\n{result.stderr}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+
+
 
 
 
@@ -61,16 +75,24 @@ def generate_tweets(num_tweets):
     compile_c_program('tweets',current_directory)
     seed = 1
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(current_directory, "tweet_data_base.txt")
+    database_path = os.path.join(current_directory, "tweet_data_base.txt")
+    program_path = os.path.join(current_directory, "tweets_generator")
 
     # Define the output file path
     output_file_path = os.path.join(current_directory, "output.txt")
-
-    run_c_program("tweets_generator", seed, file_path, num_tweets)
+    # Check if the output file exists
+    if os.path.exists(output_file_path):
+    # If the file exists, open it in write mode to truncate its content
+        with open(output_file_path, "w") as output_file:
+        # Truncate the file by writing an empty string
+            output_file.write("")
+    
+    run_c_program(program_path, seed, database_path, num_tweets,current_directory)
 
     # Read the content of the output file
     with open(output_file_path, "r") as output_file:
         tweets = output_file.read()
+        
 
     return tweets
 
@@ -81,7 +103,6 @@ async def generate_tweets_endpoint(data: TweetRequest):
 
     try:
         num_tweets = data.numTweets
-        print(num_tweets)
         # Generate tweets based on the received data
         tweets = generate_tweets(num_tweets)
 

@@ -125,9 +125,10 @@
 
                 tweets.forEach((tweet, i) => {
                     const tweetElement = document.createElement('p');
-                    tweetElement.textContent = `Tweet ${i + 1}: ${tweet}`;
+                    tweetElement.textContent = tweet; // Set the content to just the tweet text
                     tweetContainer.appendChild(tweetElement);
                 });
+
             })
             .catch(error => {
                 console.error('Error:', error);
