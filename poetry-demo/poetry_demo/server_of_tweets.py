@@ -1,14 +1,24 @@
 from typing import Annotated, Dict
-
+import subprocess
 from requests import request
 from pydantic import BaseModel
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.openapi.utils import get_openapi
+import os
+from fastapi.responses import PlainTextResponse
+from fastapi.middleware.cors import CORSMiddleware
+
+
 
 
 app = FastAPI()
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow requests from any origin (use "*" for all)
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all HTTP headers
+)
 
 def custom_openapi():
     if app.openapi_schema:
@@ -29,39 +39,59 @@ app.openapi = custom_openapi
 
 class TweetRequest(BaseModel):
     numTweets: int
-    tweetLength: str
 
-def generate_tweets(num_tweets, tweet_length):
-    # This is a placeholder function, replace it with your logic
-    tweets = []
-    for i in range(num_tweets):
-        tweet = f"Generated Tweet {i + 1} of length {tweet_length}"
-        tweets.append(tweet)
+
+def compile_c_program(target,path):
+    compile_command = ["make",target]
+    subprocess.run(compile_command, check=True,cwd=path)
+
+##compile_c_program("tweets")
+
+def run_c_program(program_name, seed,path,num_of_words):
+    parameters = [seed, num_of_words, path]
+    run_command = [f"./{program_name}"] + [str(param) for param in parameters]
+    subprocess.run(run_command, check=True)
+
+
+
+
+
+def generate_tweets(num_tweets):
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    compile_c_program('tweets',current_directory)
+    seed = 1
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_directory, "tweet_data_base.txt")
+
+    # Define the output file path
+    output_file_path = os.path.join(current_directory, "output.txt")
+
+    run_c_program("tweets_generator", seed, file_path, num_tweets)
+
+    # Read the content of the output file
+    with open(output_file_path, "r") as output_file:
+        tweets = output_file.read()
+
     return tweets
+
     
 
-users: Dict[str, str] = {}
-@app.post("/make_tweets", response_model=dict)
+@app.post("/make_tweets", response_class=PlainTextResponse)
 async def generate_tweets_endpoint(data: TweetRequest):
+
     try:
         num_tweets = data.numTweets
-        tweet_length = data.tweetLength
-
+        print(num_tweets)
         # Generate tweets based on the received data
-        tweets = generate_tweets(num_tweets, tweet_length)
+        tweets = generate_tweets(num_tweets)
 
-        return {"tweets": tweets}
+        return tweets
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get("/users")
-async def read_item1():
-    return {"result": users}
-
-
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+uvicorn.run(app, host="localhost", port=8000)

@@ -151,6 +151,16 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+# Ignore Visual Studio Code settings folder
+.vscode/
+
+# Ignore IntelliJ IDEA project folder
+poetry-demo/poetry_demo/.idea/
+
+# Ignore Zone.Identifier files for specific files
+poetry-demo/poetry_demo/generic-Markov-Chain-Text-Generator-main.zip:Zone.Identifier
+poetry-demo/poetry_demo/justdoit_tweets.txt:Zone.Identifier
+
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

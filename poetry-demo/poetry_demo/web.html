@@ -87,48 +87,43 @@
         <label for="numTweets">Number of Tweets:</label>
         <input type="number" id="numTweets" name="numTweets" min="1" required>
 
-        <label for="tweetLength">Tweet Length:</label>
-        <select id="tweetLength" name="tweetLength" required>
-            <option value="short">Short (140 characters)</option>
-            <option value="medium">Medium (280 characters)</option>
-            <option value="long">Long (500 characters)</option>
-        </select>
-
         <button type="submit">Generate Tweets</button>
     </form>
 
     <p id="output"></p>
 </div>
-
 <script>
     // JavaScript code for form submission and displaying generated tweets
     document.getElementById('tweetForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
         const numTweets = parseInt(document.getElementById('numTweets').value);
-        const tweetLength = document.getElementById('tweetLength').value;
 
         // Prepare the data to send to the Python server
         const data = {
-            numTweets,
-            tweetLength
+            numTweets: numTweets
         };
-
+        console.log({data});
         // Send a POST request to your Python server (replace 'your-python-server-url' with the actual URL)
-        fetch('http://0.0.0.0:8000/make_tweets', {
+        fetch('http://localhost:8000/make_tweets', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json' // Set the content type to JSON
+
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data) // Send the data as a JSON string
+
         })
-            .then(response => response.json())
+            .then(response => response.text()) // Change this line to handle plain text response
             .then(data => {
                 // Handle the response from the Python server (data contains generated tweets)
                 const tweetContainer = document.getElementById('output');
                 tweetContainer.innerHTML = ''; // Clear previous tweets
 
-                data.tweets.forEach((tweet, i) => {
+                // Split the plain text into an array of tweets
+                const tweets = data.split('\n');
+
+                tweets.forEach((tweet, i) => {
                     const tweetElement = document.createElement('p');
                     tweetElement.textContent = `Tweet ${i + 1}: ${tweet}`;
                     tweetContainer.appendChild(tweetElement);
