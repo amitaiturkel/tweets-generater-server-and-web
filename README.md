@@ -1,6 +1,6 @@
 # Tweet Server with C Integration and HTML Service
 
-This project, known as **tweet_server**, combines two key components: a tweet generator, a server, and an HTML-based user interface. The tweet generator leverages C files within a Python environment to produce random tweets using Markov Chains. This README will primarily emphasize the tweet server, HTML file, and the integration of C code in Python.
+This project, known as **tweet_server**, combines three key components: a tweet generator, a server, and an HTML-based user interface. The tweet generator leverages C files within a Python environment to produce random tweets using Markov Chains. This README will primarily emphasize the tweet server, HTML file, and the integration of C code in Python.
 
 ## Table of Contents
 
