@@ -104,8 +104,7 @@ We welcome contributions to this project. If you have ideas for enhancements, bu
 
 This project is licensed under the [INSERT LICENSE HERE] license. Please refer to the LICENSE file for more details.
 
-## Getting Started
-
-To get started with the project, follow these steps:
+a link to my generic Markov chain project:
+https://github.com/amitaiturkel/generic-Markov-Chain-Text-Generator
 
 
