@@ -30,7 +30,6 @@ The **tweet_server** project combines three distinct functionalities:
 To utilize the tweet server and generate tweets:
 Clone this repository to your local machine by running the following command in your terminal:
 
-```shell
 `git clone https://github.com/amitaiturkel/calc-server-test](https://github.com/amitaiturkel/Tweet-Server-with-C-Integration-and-HTML-Service`
 
 
